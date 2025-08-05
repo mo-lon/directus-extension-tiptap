@@ -73,7 +73,7 @@ const alignOptions = [
 
 const editorInitiated = ref<boolean>(false);
 
-const extensions = await loadExtensions(props);
+const extensions = loadExtensions(props);
 
 const editor = new Editor({
   editable: !props.disabled,

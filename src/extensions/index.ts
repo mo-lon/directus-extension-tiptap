@@ -53,7 +53,7 @@ export interface ExtensionMeta<
   group: ExtensionGroup;
   options: DeepPartial<Field>[];
   defaults: Options;
-  load(props: Props): PromiseLike<AnyExtension> | AnyExtension;
+  load(props: Props): AnyExtension;
 }
 
 export const extensionsMeta: ExtensionMeta[] = [
@@ -85,9 +85,7 @@ export const extensionsMeta: ExtensionMeta[] = [
   uniqueId,
 ];
 
-export async function loadExtensions(
-  props: ExtensionsProps
-): Promise<Extensions> {
+export function loadExtensions(props: ExtensionsProps): Extensions {
   const extensions: Extensions = [
     // @ts-ignore
     StarterKit.configure({
@@ -98,11 +96,9 @@ export async function loadExtensions(
     }),
   ];
 
-  const exts = await Promise.all(
-    extensionsMeta
-      .filter((ext) => props.extensions?.includes(ext.name))
-      .map((ext) => ext.load(props))
-  );
+  const exts = extensionsMeta
+    .filter((ext) => props.extensions?.includes(ext.name))
+    .map((ext) => ext.load(props));
 
   extensions.push(...exts);
 

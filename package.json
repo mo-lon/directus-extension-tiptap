@@ -2,7 +2,7 @@
   "name": "@mohaq/directus-extension-tiptap",
   "description": "Tiptap rich text editor interface and display for directus",
   "icon": "extension",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "keywords": [
     "directus",
     "directus-extension",
@@ -75,8 +75,7 @@
     "@tiptap/extension-unique-id": "2.25.0",
     "@tiptap/pm": "2.14.0",
     "@tiptap/starter-kit": "2.14.0",
-    "@tiptap/suggestion": "2.14.0",
-    "vue-i18n": "11.1.6"
+    "@tiptap/suggestion": "2.14.0"
   },
   "devDependencies": {
     "@directus/extensions-sdk": "13.1.1",
@@ -100,10 +99,6 @@
     "vitest": "3.2.4",
     "vue": "3.5.16",
     "vue-i18n": "11.1.6"
-  },
-  "peerDependencies": {
-    "@directus/extensions-sdk": "13.1.1",
-    "vue": "3.5.16"
   },
   "publishConfig": {
     "access": "public"

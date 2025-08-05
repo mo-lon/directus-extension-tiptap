@@ -1359,11 +1359,6 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-horizontal-rule/-/extension-horizontal-rule-2.26.1.tgz#5c0c635d4444f38cb70e721d06fbe2d47a79982c"
   integrity sha512-mT6baqOhs/NakgrAeDeed194E/ZJFGL692H0C7f1N7WDRaWxUu2oR0LrnRqSH5OyPjELkzu6nQnNy0+0tFGHHg==
 
-"@tiptap/extension-invisible-characters@2.25.0":
-  version "2.25.0"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-invisible-characters/-/extension-invisible-characters-2.25.0.tgz#bde946c75e352f47dc1e68d08744a0e9e6de4feb"
-  integrity sha512-CHoM5CoNDp+/lSPpCWnTHtCA4HzAMAnKps1bAJHlW5Jh+3TskRjHRJ5dRF2b+jf90RYIikl1uglHkbsYaN4FMQ==
-
 "@tiptap/extension-italic@^2.14.0":
   version "2.26.1"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-italic/-/extension-italic-2.26.1.tgz#cd798d5e410d112f70aaea2c7eb30716f4a483c6"
@@ -1385,11 +1380,6 @@
   version "2.26.1"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-list-item/-/extension-list-item-2.26.1.tgz#932e041245d3a696c943e9d4a32cdf59cb386e88"
   integrity sha512-quOXckC73Luc3x+Dcm88YAEBW+Crh3x5uvtQOQtn2GEG91AshrvbnhGRiYnfvEN7UhWIS+FYI5liHFcRKSUKrQ==
-
-"@tiptap/extension-mathematics@2.25.0":
-  version "2.25.0"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-mathematics/-/extension-mathematics-2.25.0.tgz#e3c8de6ff7e46f276994158aca15b57652b08d7f"
-  integrity sha512-p/S5UE9MWIqgpCrFQbV4bXBWxBGE9hbuSxEqXrS1CnuQ0EvZ7ZiQs0OfN8tcUW6KpOnrKyCcKR7/WdVqSO3EeQ==
 
 "@tiptap/extension-ordered-list@2.14.0":
   version "2.14.0"
@@ -1450,16 +1440,6 @@
   version "2.14.0"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-table/-/extension-table-2.14.0.tgz#b7541351518c2cf7d5bae72640d6d3375b29c677"
   integrity sha512-X/wH3XKxi5+G7cB+lHt3fPMWIJ30IBkzrJZYapJ8d4p2JxMNIU1Nyu+8K6204d0hF6SVWY8hvb/Jq/WgHtoCFA==
-
-"@tiptap/extension-task-item@2.14.0":
-  version "2.14.0"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-task-item/-/extension-task-item-2.14.0.tgz#5d576c5486dba9d4475456a3f1dc4e614b6b3ac0"
-  integrity sha512-MFE928s1J2ACyjOlkx52D/+r6aqz6c516C0tvnP2vzrkijFaSMNY4Xg7L1wTinzIdijh184AYQpyw7LezJa1ug==
-
-"@tiptap/extension-task-list@2.14.0":
-  version "2.14.0"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-task-list/-/extension-task-list-2.14.0.tgz#a61ae92ac3e534ff192f57c88dd8bbb14ca9fc11"
-  integrity sha512-o2VELXgkDIHS15pnF1W2OFfxZGvo9V6RcwjzCYUS0mqMF9TTbfHwddRcv4t3pifpMO3sWhspVARavJAGaP5zdQ==
 
 "@tiptap/extension-text-align@2.14.0":
   version "2.14.0"
@@ -2361,11 +2341,6 @@ commander@^7.2.0:
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-7.2.0.tgz#a36cb57d0b501ce108e4d20559a150a391d97ab7"
   integrity sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==
-
-commander@^8.3.0:
-  version "8.3.0"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-8.3.0.tgz#4837ea1b2da67b9c616a67afbb0fafee567bca66"
-  integrity sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==
 
 commondir@^1.0.1:
   version "1.0.1"
@@ -3493,13 +3468,6 @@ jsonfile@^6.0.1:
     universalify "^2.0.0"
   optionalDependencies:
     graceful-fs "^4.1.6"
-
-katex@0.16.22:
-  version "0.16.22"
-  resolved "https://registry.yarnpkg.com/katex/-/katex-0.16.22.tgz#d2b3d66464b1e6d69e6463b28a86ced5a02c5ccd"
-  integrity sha512-XCHRdUw4lf3SKBaJe4EvgqIuWwkPSo9XoeO8GjQW94Bp7TWv9hNhzZjZ+OH9yf1UmLygb7DIT5GSFQiyt16zYg==
-  dependencies:
-    commander "^8.3.0"
 
 keyv@^4.5.4:
   version "4.5.4"

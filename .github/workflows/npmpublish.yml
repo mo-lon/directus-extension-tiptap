@@ -21,12 +21,12 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn
 
       - name: Build package
-        run: npm run build
+        run: yarn build
 
       - name: Publish to npm
-        run: npm publish
+        run: yarn publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

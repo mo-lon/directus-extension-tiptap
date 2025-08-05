@@ -1,0 +1,113 @@
+{
+  "name": "@mo-lon/directus-extension-tiptap",
+  "description": "Tiptap rich text editor interface and display for directus",
+  "icon": "extension",
+  "version": "1.0.0",
+  "keywords": [
+    "directus",
+    "directus-extension",
+    "directus-custom-bundle",
+    "directus-custom-interface",
+    "directus-custom-display",
+    "tiptap",
+    "prosemirror",
+    "wysiwg",
+    "editor"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "directus:extension": {
+    "host": "^11.0.0",
+    "type": "bundle",
+    "path": {
+      "app": "dist/app.mjs",
+      "api": "dist/api.mjs"
+    },
+    "entries": [
+      {
+        "type": "interface",
+        "name": "directus-extension-tiptap-interface",
+        "source": "src/interface.ts"
+      },
+      {
+        "type": "display",
+        "name": "directus-extension-tiptap-display",
+        "source": "src/display.ts"
+      }
+    ]
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "directus-extension build",
+    "dev": "directus-extension build -w --no-minify",
+    "link": "directus-extension link",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@tiptap/core": "2.14.0",
+    "@tiptap/extension-bullet-list": "2.14.0",
+    "@tiptap/extension-character-count": "2.14.0",
+    "@tiptap/extension-color": "2.14.0",
+    "@tiptap/extension-details": "2.24.1",
+    "@tiptap/extension-details-content": "2.24.1",
+    "@tiptap/extension-details-summary": "2.24.1",
+    "@tiptap/extension-focus": "2.14.0",
+    "@tiptap/extension-highlight": "2.14.0",
+    "@tiptap/extension-link": "2.14.0",
+    "@tiptap/extension-list-item": "2.14.0",
+    "@tiptap/extension-heading": "2.14.0",
+    "@tiptap/extension-ordered-list": "2.14.0",
+    "@tiptap/extension-paragraph": "2.14.0",
+    "@tiptap/extension-placeholder": "2.14.0",
+    "@tiptap/extension-subscript": "2.14.0",
+    "@tiptap/extension-superscript": "2.14.0",
+    "@tiptap/extension-table": "2.14.0",
+    "@tiptap/extension-table-cell": "2.14.0",
+    "@tiptap/extension-table-header": "2.14.0",
+    "@tiptap/extension-table-row": "2.14.0",
+    "@tiptap/extension-text-align": "2.14.0",
+    "@tiptap/extension-text-style": "2.14.0",
+    "@tiptap/extension-typography": "2.14.0",
+    "@tiptap/extension-underline": "2.14.0",
+    "@tiptap/pm": "2.14.0",
+    "@tiptap/starter-kit": "2.14.0",
+    "@tiptap/suggestion": "2.14.0"
+  },
+  "devDependencies": {
+    "@directus/extensions-sdk": "13.1.1",
+    "@directus/schema": "13.0.1",
+    "@directus/sdk": "19.1.0",
+    "@directus/types": "13.1.2",
+    "@eslint/js": "9.29.0",
+    "@tiptap/vue-3": "2.14.0",
+    "@vue/tsconfig": "0.7.0",
+    "dotenv": "16.5.0",
+    "eslint": "9.29.0",
+    "eslint-plugin-prettier": "5.5.1",
+    "eslint-plugin-vue": "10.2.0",
+    "prettier": "3.6.1",
+    "rollup": "4.44.1",
+    "rollup-plugin-node-externals": "8.0.1",
+    "sass": "1.89.2",
+    "tippy.js": "6.3.7",
+    "typescript": "5.8.3",
+    "typescript-eslint": "8.35.0",
+    "vitest": "3.2.4",
+    "vue": "3.5.16",
+    "vue-i18n": "11.1.6"
+  },
+  "peerDependencies": {
+    "@directus/extensions-sdk": "13.1.1",
+    "vue": "3.5.16",
+    "vue-i18n": "11.1.6"
+  },
+  "optionalDependencies": {
+    "@tiptap/extension-unique-id": "2.25.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

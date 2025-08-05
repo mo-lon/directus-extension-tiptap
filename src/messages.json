@@ -1,0 +1,36 @@
+{
+  "en": {
+    "tiptap": {
+      "paragraph": "Paragraph",
+      "br": "Hard break",
+      "clear_format": "Clear text formatting",
+      "highlight": "Highlight",
+      "color": "Text color",
+      "unset_color": "Remove text color",
+      "count_chars": "no characters | 1 character | {count} characters",
+      "count_words": "no words | 1 word | {count} words",
+      "link_type": "Link type",
+      "link_open_link_in": "Open link in",
+      "link_title": "Title",
+      "link_aria_label": "Aria label",
+      "link_rel": "Rel",
+      "link_select_file": "Select file",
+      "link_selected_file": "Selected file",
+      "text_align": "Text align",
+      "table_insert": "Insert table",
+      "table_delete": "Delete table",
+      "table_add_column_before": "Add column before",
+      "table_add_column_after": "Add column after",
+      "table_delete_column": "Delete column",
+      "table_add_row_before": "Add row before",
+      "table_add_row_after": "Add row after",
+      "table_delete_row": "Delete row",
+      "table_merge_cells": "Merge cells",
+      "table_split_cell": "Split cell",
+      "table_toggle_header_row": "Toggle header row",
+      "table_toggle_header_column": "Toggle header column",
+      "table_toggle_header_cell": "Toggle header cell",
+      "invisible_characters": "Invisible characters"
+    }
+  }
+}

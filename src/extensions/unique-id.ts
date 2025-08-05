@@ -1,5 +1,6 @@
 import type { ExtensionMeta } from "./index";
 import type { UniqueIDOptions } from "@tiptap/extension-unique-id";
+import { UniqueID } from "@tiptap/extension-unique-id";
 
 type Options = Pick<UniqueIDOptions, "attributeName" | "types">;
 
@@ -65,8 +66,7 @@ const extension: ExtensionMeta<Options, UniqueIDProps> = {
       },
     },
   ],
-  load: async (props) => {
-    const { UniqueID } = await import("@tiptap/extension-unique-id");
+  load: (props) => {
     return UniqueID.configure({
       attributeName: props.uniqueIdAttributeName ?? defaults.attributeName,
       types: props.uniqueIdTypes ?? defaults.types,

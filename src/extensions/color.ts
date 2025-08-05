@@ -1,4 +1,5 @@
 import type { ExtensionMeta } from "./index";
+import { Color } from "@tiptap/extension-color";
 
 type Options = {
   types: string[];
@@ -29,12 +30,12 @@ const extension: ExtensionMeta<Options, ColorProps> = {
         note: "Node or mark types where color should be applied (usually textStyle).",
       },
       schema: {
+        // @ts-ignore
         default_value: defaults.types,
       },
     },
   ],
-  load: async (props) => {
-    const { Color } = await import("@tiptap/extension-color");
+  load: (props) => {
     return Color.configure({
       types: props.colorTypes ?? ["textStyle"],
     });

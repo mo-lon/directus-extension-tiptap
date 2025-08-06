@@ -74,6 +74,18 @@ export const Image = Node.create<ImageOptions>({
       title: {
         default: null,
       },
+      spaceBefore: {
+        default: null,
+        parseHTML: (el) => el.getAttribute("data-space-before"),
+        renderHTML: (attrs) =>
+          attrs.spaceBefore ? { "data-space-before": attrs.spaceBefore } : {},
+      },
+      spaceAfter: {
+        default: null,
+        parseHTML: (el) => el.getAttribute("data-space-after"),
+        renderHTML: (attrs) =>
+          attrs.spaceAfter ? { "data-space-after": attrs.spaceAfter } : {},
+      },
     };
   },
 
@@ -89,7 +101,10 @@ export const Image = Node.create<ImageOptions>({
     const id = HTMLAttributes["data-directus-id"];
     const filename = HTMLAttributes["data-directus-filename"];
     const src = this.options.publicURL + id + (filename ? "/" + filename : "");
-    return ["img", mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, { src })];
+    return [
+      "img",
+      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, { src }),
+    ];
   },
 
   addCommands() {

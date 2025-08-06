@@ -154,7 +154,8 @@ const setHeadingLevel = (level: number) => {
     .run();
 };
 
-const spacerVariants = [
+const spacingScale = [
+  "none",
   "xs",
   "sm",
   "md",
@@ -166,10 +167,81 @@ const spacerVariants = [
   "5xl",
   "6xl",
   "7xl",
-] as const;
+];
 
-const insertSpacer = (variant: string) => {
-  editor?.chain().focus().insertSpacer(variant).run();
+const getAdjustedSpacing = (
+  current: string | null | undefined,
+  direction: "increase" | "decrease"
+) => {
+  const index = spacingScale.indexOf(current ?? "none");
+
+  if (index === -1) return direction === "increase" ? "xs" : "none";
+
+  const nextIndex =
+    direction === "increase"
+      ? Math.min(index + 1, spacingScale.length - 1)
+      : Math.max(index - 1, 0);
+
+  return spacingScale[nextIndex];
+};
+
+const adjustBlockSpacing = (
+  direction: "increase" | "decrease",
+  target: "before" | "after" | "both"
+) => {
+  const { $from } = editor?.state.selection;
+  const node = $from.node($from.depth);
+
+  if (!node || !node.type) return;
+
+  const blockTypes = [
+    "paragraph",
+    "heading",
+    "bulletList",
+    "orderedList",
+    "listItem",
+    "image",
+    "table",
+  ];
+  if (!blockTypes.includes(node.type.name)) return;
+
+  const currentBefore = node.attrs?.spaceBefore ?? "none";
+  const currentAfter = node.attrs?.spaceAfter ?? "none";
+
+  const updates: Record<string, string> = {};
+
+  if (target === "before" || target === "both") {
+    updates.spaceBefore = getAdjustedSpacing(currentBefore, direction);
+  }
+
+  if (target === "after" || target === "both") {
+    updates.spaceAfter = getAdjustedSpacing(currentAfter, direction);
+  }
+
+  editor?.chain().focus().updateAttributes(node.type.name, updates).run();
+};
+
+const setSpacingForActiveBlock = (
+  spaceBefore: string | null,
+  spaceAfter: string | null
+) => {
+  const { $from } = editor?.state.selection;
+  const node = $from.node($from.depth);
+
+  if (!node || !node.type) return;
+
+  // Skip non-block nodes
+  const blockTypes = ["paragraph", "heading", "bulletList", "orderedList"];
+  if (!blockTypes.includes(node.type.name)) return;
+
+  editor
+    ?.chain()
+    .focus()
+    .updateAttributes(node.type.name, {
+      ...(spaceBefore !== undefined && { spaceBefore }),
+      ...(spaceAfter !== undefined && { spaceAfter }),
+    })
+    .run();
 };
 
 const bulletListVariants = [
@@ -790,34 +862,66 @@ onBeforeUnmount(() => {
         </v-list>
       </v-menu>
 
-      <v-menu
-        v-if="editorExtensions.includes('spacer')"
-        show-arrow
-        placement="bottom-start"
-      >
+      <v-menu show-arrow placement="bottom-start">
         <template #activator="{ toggle }">
-          <v-button
-            v-tooltip="'Insert spacer'"
-            :disabled="props.disabled"
-            :active="editor.isActive('spacer')"
-            small
-            icon
-            @click="toggle"
-          >
+          <v-button icon small @click="toggle">
             <icons.Spacer />
           </v-button>
         </template>
+
         <v-list>
-          <v-list-item
-            v-for="variant in spacerVariants"
-            :key="variant"
-            :active="editor.isActive('spacer', { variant })"
-            clickable
-            @click="insertSpacer(variant)"
-          >
-            <v-list-item-content>
-              <v-text-overflow :text="`Spacer: ${variant}`" />
-            </v-list-item-content>
+          <v-list-item>
+            <v-btn
+              block
+              small
+              @click="adjustBlockSpacing('increase', 'before')"
+            >
+              Increase spacing (before)
+            </v-btn>
+          </v-list-item>
+
+          <v-list-item>
+            <v-btn block small @click="adjustBlockSpacing('increase', 'after')">
+              Increase spacing (after)
+            </v-btn>
+          </v-list-item>
+
+          <v-list-item>
+            <v-btn block small @click="adjustBlockSpacing('increase', 'both')">
+              Increase spacing (before + after)
+            </v-btn>
+          </v-list-item>
+
+          <v-list-item>
+            <v-btn
+              block
+              small
+              @click="adjustBlockSpacing('decrease', 'before')"
+            >
+              Decrease spacing (before)
+            </v-btn>
+          </v-list-item>
+
+          <v-list-item>
+            <v-btn block small @click="adjustBlockSpacing('decrease', 'after')">
+              Decrease spacing (after)
+            </v-btn>
+          </v-list-item>
+
+          <v-list-item>
+            <v-btn block small @click="adjustBlockSpacing('decrease', 'both')">
+              Decrease spacing (before + after)
+            </v-btn>
+          </v-list-item>
+
+          <v-list-item>
+            <v-btn
+              block
+              small
+              @click="setSpacingForActiveBlock('none', 'none')"
+            >
+              Reset spacing
+            </v-btn>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -1449,43 +1553,78 @@ onBeforeUnmount(() => {
     }
   }
 
-  .spacer {
-    display: block;
-    width: 100%;
+  [data-space-after="none"] {
+    margin-bottom: 0;
+  }
+  [data-space-after="xs"] {
+    margin-bottom: 0.5rem;
+  }
+  [data-space-after="sm"] {
+    margin-bottom: 1rem;
+  }
+  [data-space-after="md"] {
+    margin-bottom: 1.5rem;
+  }
+  [data-space-after="lg"] {
+    margin-bottom: 2rem;
+  }
+  [data-space-after="xl"] {
+    margin-bottom: 3rem;
+  }
+  [data-space-after="2xl"] {
+    margin-bottom: 4rem;
+  }
+  [data-space-after="3xl"] {
+    margin-bottom: 5rem;
+  }
+  [data-space-after="4xl"] {
+    margin-bottom: 6rem;
+  }
+  [data-space-after="5xl"] {
+    margin-bottom: 8rem;
+  }
+  [data-space-after="6xl"] {
+    margin-bottom: 10rem;
+  }
+  [data-space-after="7xl"] {
+    margin-bottom: 12rem;
   }
 
-  .spacer-xs {
-    height: 0.5rem;
+  [data-space-before="none"] {
+    margin-top: 0;
   }
-  .spacer-sm {
-    height: 1rem;
+  [data-space-before="xs"] {
+    margin-top: 0.5rem;
   }
-  .spacer-md {
-    height: 1.5rem;
+  [data-space-before="sm"] {
+    margin-top: 1rem;
   }
-  .spacer-lg {
-    height: 2rem;
+  [data-space-before="md"] {
+    margin-top: 1.5rem;
   }
-  .spacer-xl {
-    height: 3rem;
+  [data-space-before="lg"] {
+    margin-top: 2rem;
   }
-  .spacer-2xl {
-    height: 4rem;
+  [data-space-before="xl"] {
+    margin-top: 3rem;
   }
-  .spacer-3xl {
-    height: 5rem;
+  [data-space-before="2xl"] {
+    margin-top: 4rem;
   }
-  .spacer-4xl {
-    height: 6rem;
+  [data-space-before="3xl"] {
+    margin-top: 5rem;
   }
-  .spacer-5xl {
-    height: 8rem;
+  [data-space-before="4xl"] {
+    margin-top: 6rem;
   }
-  .spacer-6xl {
-    height: 10rem;
+  [data-space-before="5xl"] {
+    margin-top: 8rem;
   }
-  .spacer-7xl {
-    height: 12rem;
+  [data-space-before="6xl"] {
+    margin-top: 10rem;
+  }
+  [data-space-before="7xl"] {
+    margin-top: 12rem;
   }
 
   &__info {

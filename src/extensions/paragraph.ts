@@ -28,6 +28,18 @@ export const ParagraphVariant = Paragraph.extend({
           };
         },
       },
+      spaceAfter: {
+        default: null,
+        parseHTML: (el) => el.getAttribute("data-space-after"),
+        renderHTML: (attrs) =>
+          attrs.spaceAfter ? { "data-space-after": attrs.spaceAfter } : {},
+      },
+      spaceBefore: {
+        default: null,
+        parseHTML: (el) => el.getAttribute("data-space-before"),
+        renderHTML: (attrs) =>
+          attrs.spaceBefore ? { "data-space-before": attrs.spaceBefore } : {},
+      },
     };
   },
 

@@ -5,6 +5,7 @@ import type { ExtensionMeta } from "./index";
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     ordered_list_variant: {
+      toggleOrderedList: () => ReturnType;
       setListVariant: (variant: string | null) => ReturnType;
     };
   }
@@ -24,6 +25,18 @@ export const CustomOrderedList = OrderedList.extend({
             class: `list-variant-${attributes.variant}`,
           });
         },
+      },
+      spaceBefore: {
+        default: null,
+        parseHTML: (el) => el.getAttribute("data-space-before"),
+        renderHTML: (attrs) =>
+          attrs.spaceBefore ? { "data-space-before": attrs.spaceBefore } : {},
+      },
+      spaceAfter: {
+        default: null,
+        parseHTML: (el) => el.getAttribute("data-space-after"),
+        renderHTML: (attrs) =>
+          attrs.spaceAfter ? { "data-space-after": attrs.spaceAfter } : {},
       },
     };
   },

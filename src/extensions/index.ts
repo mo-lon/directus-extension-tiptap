@@ -24,6 +24,9 @@ import detailsSummary from "./details-summary";
 import spacer from "./spacer";
 import bulletList from "./bullet-list";
 import orderedList from "./ordered-list";
+import layout from "./layout";
+import layoutColumn from "./layout-column";
+
 type ExtensionGroup = "mark" | "node" | "editor";
 
 export const extensionsGroups: { group: ExtensionGroup; label: string }[] = [
@@ -66,6 +69,8 @@ export const extensionsMeta: ExtensionMeta[] = [
   textStyle,
   color,
   // nodes
+  layout,
+  layoutColumn,
   bulletList,
   orderedList,
   table,

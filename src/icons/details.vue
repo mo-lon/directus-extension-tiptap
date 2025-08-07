@@ -1,65 +1,15 @@
 <template>
   <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
     width="24"
     height="24"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
   >
-    <rect
-      x="3"
-      y="3"
-      width="18"
-      height="4"
-      rx="1"
-      ry="1"
-      stroke="black"
-      fill="none"
-      stroke-width="1.0"
-    />
-    <line x1="6" y1="5" x2="12" y2="5" stroke="black" stroke-width="1.0" />
-    <polyline
-      points="16,4 18,6 20,4"
-      fill="none"
-      stroke="black"
-      stroke-width="1.0"
-    />
-
-    <rect
-      x="3"
-      y="10"
-      width="18"
-      height="4"
-      rx="1"
-      ry="1"
-      stroke="black"
-      fill="none"
-      stroke-width="1.0"
-    />
-    <line x1="6" y1="12" x2="12" y2="12" stroke="black" stroke-width="1.0" />
-    <polyline
-      points="16,11 18,13 20,11"
-      fill="none"
-      stroke="black"
-      stroke-width="1.0"
-    />
-
-    <rect
-      x="3"
-      y="17"
-      width="18"
-      height="4"
-      rx="1"
-      ry="1"
-      stroke="black"
-      fill="none"
-      stroke-width="1.0"
-    />
-    <line x1="6" y1="19" x2="12" y2="19" stroke="black" stroke-width="1.0" />
-    <polyline
-      points="16,18 18,20 20,18"
-      fill="none"
-      stroke="black"
-      stroke-width="1.0"
-    />
+    <g transform="translate(2,2) scale(1.1765)">
+      <path
+        d="M0 0v3h17v-3h-17zM16 2h-15v-1h15v1zM0 13h17v-9h-17v9zM1 5h15v7h-15v-7zM0 17h17v-3h-17v3zM1 15h15v1h-15v-1z"
+        fill="#000000"
+      />
+    </g>
   </svg>
 </template>

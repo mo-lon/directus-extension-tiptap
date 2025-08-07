@@ -8,6 +8,7 @@ import Bold from "./bold.vue";
 import CodeBoxLine from "./code-box-line.vue";
 import CodeLine from "./code-line.vue";
 import Color from "./color.vue";
+import Columns from "./columns.vue";
 import DeleteBin from "./delete-bin.vue";
 import DeleteColor from "./delete-color.vue";
 import DeleteColumn from "./delete-column.vue";
@@ -62,6 +63,7 @@ const icons = {
   CodeBoxLine,
   CodeLine,
   Color,
+  Columns,
   DeleteBin,
   DeleteColor,
   DeleteColumn,

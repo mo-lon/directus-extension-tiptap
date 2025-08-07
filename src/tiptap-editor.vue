@@ -290,6 +290,14 @@ const toggleOrderedListVariant = (variant: string) => {
     .run();
 };
 
+const layoutColumnCount = ref(2);
+
+function insertLayoutColumns() {
+  if (layoutColumnCount.value >= 1) {
+    editor.chain().focus().insertLayout(layoutColumnCount.value).run();
+  }
+}
+
 watch(
   () => props.value,
   (value) => {
@@ -544,6 +552,54 @@ onBeforeUnmount(() => {
       <div class="divider" />
 
       <!-- nodes -->
+
+      <v-menu
+        v-if="editor?.can().insertLayout"
+        show-arrow
+        placement="bottom-start"
+      >
+        <template #activator="{ toggle }">
+          <v-button v-tooltip="'Layout block tools'" icon small @click="toggle">
+            <icons.Columns />
+          </v-button>
+        </template>
+
+        <v-list>
+          <!-- Insert Layout Block with dynamic column count -->
+          <v-list-item>
+            <v-list-item-content>
+              <div class="pa-2" style="min-width: 200px">
+                <div class="text-caption mb-2">Number of columns</div>
+                <v-slider
+                  v-model="layoutColumnCount"
+                  :min="2"
+                  :max="6"
+                  step="1"
+                  ticks="always"
+                  tick-size="4"
+                  class="mb-2"
+                  hide-details
+                  dense
+                />
+                <v-btn block small @click="insertLayoutColumns">
+                  Insert {{ layoutColumnCount }} column layout
+                </v-btn>
+              </div>
+            </v-list-item-content>
+          </v-list-item>
+
+          <!-- Unset layout block -->
+          <v-list-item>
+            <v-btn
+              block
+              small
+              @click="editor.chain().focus().unsetLayout().run()"
+            >
+              Remove layout block
+            </v-btn>
+          </v-list-item>
+        </v-list>
+      </v-menu>
 
       <v-menu
         v-if="editorExtensions.includes('heading')"
@@ -1149,7 +1205,7 @@ onBeforeUnmount(() => {
       </v-menu>
 
       <v-button
-        v-tooltip="'Toggle Details Block'"
+        v-tooltip="'Toggle Details'"
         :disabled="props.disabled"
         icon
         small
@@ -1776,6 +1832,27 @@ onBeforeUnmount(() => {
       border-radius: 3px;
       //box-shadow: 0 0 6px 2px var(--background-subdued);
       box-shadow: var(--card-shadow);
+    }
+
+    .ProseMirror .layout-block {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+      gap: 1.5rem; /* Adjust column gap */
+      margin: 1rem 0; /* Spacing before/after the block */
+      padding: 0.5rem 0;
+      border: 1px solid #e0e0e0;
+      border-radius: 0.5rem;
+      background-color: #fafafa;
+    }
+
+    .ProseMirror .layout-column {
+      overflow: auto;
+      padding: 0.75rem;
+      border: 1px dashed #bbb;
+      border-radius: 0.5rem;
+      background-color: #fff;
+      min-height: 40px;
     }
 
     table {

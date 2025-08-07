@@ -22,6 +22,14 @@ export const CustomHeading = Heading.extend({
   addAttributes() {
     return {
       ...this.parent?.(),
+      id: {
+        default: null,
+        parseHTML: (element) => element.getAttribute("id"),
+        renderHTML: (attributes) => {
+          if (!attributes.id) return {};
+          return { id: attributes.id };
+        },
+      },
       variant: {
         default: null,
         parseHTML: (element) => element.getAttribute("data-variant"),

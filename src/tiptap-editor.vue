@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { BubbleMenu, Editor, EditorContent } from "@tiptap/vue-3";
-import { computed, onBeforeUnmount, ref, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { translateShortcut } from "./utils/translate-shortcut";
 import type { TypeType, ValueType } from "./types";
@@ -169,79 +169,73 @@ const spacingScale = [
   "7xl",
 ];
 
-const getAdjustedSpacing = (
-  current: string | null | undefined,
-  direction: "increase" | "decrease"
-) => {
-  const index = spacingScale.indexOf(current ?? "none");
+const beforeIndex = ref(0);
+const afterIndex = ref(0);
 
-  if (index === -1) return direction === "increase" ? "xs" : "none";
-
-  const nextIndex =
-    direction === "increase"
-      ? Math.min(index + 1, spacingScale.length - 1)
-      : Math.max(index - 1, 0);
-
-  return spacingScale[nextIndex];
+const clampIndex = (i: number) => {
+  return Math.max(0, Math.min(spacingScale.length - 1, i));
 };
 
-const adjustBlockSpacing = (
-  direction: "increase" | "decrease",
-  target: "before" | "after" | "both"
-) => {
-  const { $from } = editor?.state.selection;
-  const node = $from.node($from.depth);
-
-  if (!node || !node.type) return;
-
-  const blockTypes = [
-    "paragraph",
-    "heading",
-    "bulletList",
-    "orderedList",
-    "listItem",
-    "image",
-    "table",
-  ];
-  if (!blockTypes.includes(node.type.name)) return;
-
-  const currentBefore = node.attrs?.spaceBefore ?? "none";
-  const currentAfter = node.attrs?.spaceAfter ?? "none";
-
-  const updates: Record<string, string> = {};
-
-  if (target === "before" || target === "both") {
-    updates.spaceBefore = getAdjustedSpacing(currentBefore, direction);
+const getActiveBlock = () => {
+  const { state } = editor;
+  const { $from } = state.selection;
+  for (let d = $from.depth; d >= 0; d--) {
+    const n = $from.node(d);
+    if (n.isBlock) return { node: n, depth: d };
   }
-
-  if (target === "after" || target === "both") {
-    updates.spaceAfter = getAdjustedSpacing(currentAfter, direction);
-  }
-
-  editor?.chain().focus().updateAttributes(node.type.name, updates).run();
+  return null;
 };
 
-const setSpacingForActiveBlock = (
-  spaceBefore: string | null,
-  spaceAfter: string | null
-) => {
-  const { $from } = editor?.state.selection;
-  const node = $from.node($from.depth);
+const syncSlidersFromSelection = () => {
+  const active = getActiveBlock();
+  if (!active) return;
 
-  if (!node || !node.type) return;
+  const attrs = active.node.attrs ?? {};
+  const b = attrs.spaceBefore ?? "none";
+  const a = attrs.spaceAfter ?? "none";
 
-  // Skip non-block nodes
-  const blockTypes = ["paragraph", "heading", "bulletList", "orderedList"];
-  if (!blockTypes.includes(node.type.name)) return;
+  beforeIndex.value = clampIndex(
+    spacingScale.indexOf(b === undefined ? "none" : b)
+  );
+  if (beforeIndex.value === -1) beforeIndex.value = 0;
 
+  afterIndex.value = clampIndex(
+    spacingScale.indexOf(a === undefined ? "none" : a)
+  );
+  if (afterIndex.value === -1) afterIndex.value = 0;
+};
+
+const applySpacing = (which: "before" | "after", index: number) => {
+  const active = getActiveBlock();
+  if (!active) return;
+
+  const nodeTypeName = active.node.type.name; // e.g. 'paragraph','heading','bulletList', etc.
+  const value = spacingScale[clampIndex(index)];
+
+  const update =
+    which === "before" ? { spaceBefore: value } : { spaceAfter: value };
+
+  editor.chain().focus().updateAttributes(nodeTypeName, update).run();
+};
+
+const resetSpacing = () => {
+  const active = getActiveBlock();
+  if (!active) return;
+  const nodeTypeName = active.node.type.name;
   editor
-    ?.chain()
+    .chain()
     .focus()
-    .updateAttributes(node.type.name, {
-      ...(spaceBefore !== undefined && { spaceBefore }),
-      ...(spaceAfter !== undefined && { spaceAfter }),
+    .updateAttributes(nodeTypeName, {
+      spaceBefore: "none",
+      spaceAfter: "none",
     })
     .run();
+  beforeIndex.value = 0;
+  afterIndex.value = 0;
+};
+
+const onSelectionUpdate = () => {
+  syncSlidersFromSelection();
 };
 
 const bulletListVariants = [
@@ -327,7 +321,15 @@ watch(
   (disabled) => editor.setEditable(!disabled)
 );
 
+onMounted(() => {
+  syncSlidersFromSelection();
+  editor.on("selectionUpdate", onSelectionUpdate);
+  editor.on("transaction", onSelectionUpdate);
+});
+
 onBeforeUnmount(() => {
+  editor.off("selectionUpdate", onSelectionUpdate);
+  editor.off("transaction", onSelectionUpdate);
   editor.destroy();
 });
 </script>
@@ -559,7 +561,7 @@ onBeforeUnmount(() => {
         placement="bottom-start"
       >
         <template #activator="{ toggle }">
-          <v-button v-tooltip="'Layout block tools'" icon small @click="toggle">
+          <v-button v-tooltip="'Layout'" icon small @click="toggle">
             <icons.Columns />
           </v-button>
         </template>
@@ -918,66 +920,54 @@ onBeforeUnmount(() => {
         </v-list>
       </v-menu>
 
-      <v-menu show-arrow placement="bottom-start">
+      <v-menu v-if="editor" show-arrow placement="bottom-start">
         <template #activator="{ toggle }">
-          <v-button icon small @click="toggle">
+          <v-button
+            icon
+            small
+            :disabled="props.disabled"
+            @click="toggle"
+            v-tooltip="'Spacing'"
+          >
             <icons.Spacer />
           </v-button>
         </template>
 
         <v-list>
           <v-list-item>
-            <v-btn
-              block
-              small
-              @click="adjustBlockSpacing('increase', 'before')"
-            >
-              Increase spacing (before)
-            </v-btn>
-          </v-list-item>
+            <v-list-item-content>
+              <div class="pa-3" style="min-width: 240px">
+                <div class="text-caption mb-1">Space before</div>
+                <v-slider
+                  v-model="beforeIndex"
+                  :min="0"
+                  :max="spacingScale.length - 1"
+                  :step="1"
+                  show-ticks
+                  tick-size="2"
+                  :label="spacingScale[beforeIndex]"
+                  hide-details
+                  @change="applySpacing('before', beforeIndex)"
+                />
 
-          <v-list-item>
-            <v-btn block small @click="adjustBlockSpacing('increase', 'after')">
-              Increase spacing (after)
-            </v-btn>
-          </v-list-item>
+                <div class="text-caption mt-4 mb-1">Space after</div>
+                <v-slider
+                  v-model="afterIndex"
+                  :min="0"
+                  :max="spacingScale.length - 1"
+                  :step="1"
+                  show-ticks
+                  tick-size="2"
+                  :label="spacingScale[afterIndex]"
+                  hide-details
+                  @change="applySpacing('after', afterIndex)"
+                />
 
-          <v-list-item>
-            <v-btn block small @click="adjustBlockSpacing('increase', 'both')">
-              Increase spacing (before + after)
-            </v-btn>
-          </v-list-item>
-
-          <v-list-item>
-            <v-btn
-              block
-              small
-              @click="adjustBlockSpacing('decrease', 'before')"
-            >
-              Decrease spacing (before)
-            </v-btn>
-          </v-list-item>
-
-          <v-list-item>
-            <v-btn block small @click="adjustBlockSpacing('decrease', 'after')">
-              Decrease spacing (after)
-            </v-btn>
-          </v-list-item>
-
-          <v-list-item>
-            <v-btn block small @click="adjustBlockSpacing('decrease', 'both')">
-              Decrease spacing (before + after)
-            </v-btn>
-          </v-list-item>
-
-          <v-list-item>
-            <v-btn
-              block
-              small
-              @click="setSpacingForActiveBlock('none', 'none')"
-            >
-              Reset spacing
-            </v-btn>
+                <v-btn block small class="mt-3" @click="resetSpacing">
+                  Reset spacing
+                </v-btn>
+              </div>
+            </v-list-item-content>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -1205,7 +1195,7 @@ onBeforeUnmount(() => {
       </v-menu>
 
       <v-button
-        v-tooltip="'Toggle Details'"
+        v-tooltip="'Details'"
         :disabled="props.disabled"
         icon
         small
@@ -1347,10 +1337,10 @@ onBeforeUnmount(() => {
             <v-select
               v-model="linkTarget"
               :items="[
-                { title: 'Same Tab', value: '_self' },
-                { title: 'New Tab', value: '_blank' },
+                { text: 'Same Tab', value: '_self' },
+                { text: 'New Tab', value: '_blank' },
               ]"
-              item-title="title"
+              item-title="text"
               item-value="value"
             />
           </div>
@@ -1607,6 +1597,11 @@ onBeforeUnmount(() => {
     .details {
       margin: 0.5rem 0;
     }
+  }
+
+  .spacer {
+    display: block;
+    width: 100%;
   }
 
   [data-space-after="none"] {

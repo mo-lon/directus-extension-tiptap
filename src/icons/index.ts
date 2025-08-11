@@ -1,7 +1,9 @@
 import AlignCenter from "./align-center.vue";
+import AlignHorizontal from "./align-horizontal.vue";
 import AlignJustify from "./align-justify.vue";
 import AlignLeft from "./align-left.vue";
 import AlignRight from "./align-right.vue";
+import AlignVertical from "./align-vertical.vue";
 import ArrowGoBackLine from "./arrow-go-back-line.vue";
 import ArrowGoForwardLine from "./arrow-go-forward-line.vue";
 import Bold from "./bold.vue";
@@ -51,12 +53,15 @@ import Table from "./table.vue";
 import TextWrap from "./text-wrap.vue";
 import Underline from "./underline.vue";
 import Unlink from "./unlink.vue";
+import Video from "./video.vue";
 
 const icons = {
   AlignCenter,
+  AlignHorizontal,
   AlignJustify,
   AlignLeft,
   AlignRight,
+  AlignVertical,
   ArrowGoBackLine,
   ArrowGoForwardLine,
   Bold,
@@ -106,6 +111,7 @@ const icons = {
   TextWrap,
   Underline,
   Unlink,
+  Video,
 };
 
 export default icons;

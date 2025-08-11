@@ -14,6 +14,7 @@ import focus from "./extensions/focus";
 import table from "./extensions/table";
 import icons from "./icons";
 import { useImage } from "./composables/image";
+import { useVideo } from "./composables/video";
 import uniqueId from "./extensions/unique-id";
 
 const { t } = useI18n({ messages });
@@ -124,6 +125,16 @@ const {
   imageClose,
   imageSave,
 } = useImage(editor);
+
+const {
+  videoDrawerOpen,
+  videoSelection,
+  videoSelect,
+  videoOpen,
+  videoClose,
+  videoSave,
+  captionsSelect,
+} = useVideo(editor);
 
 const textAlignActive = computed(() => {
   const types = props.textAlignTypes ?? ["paragraph", "heading"];
@@ -292,6 +303,87 @@ function insertLayoutColumns() {
   }
 }
 
+const JUSTIFY_VALUES = [
+  "flex-start",
+  "center",
+  "flex-end",
+  "space-between",
+  "space-around",
+  "space-evenly",
+] as const;
+
+const ALIGN_VALUES = [
+  "stretch",
+  "flex-start",
+  "center",
+  "flex-end",
+  "baseline",
+] as const;
+
+function getColumnAttrs() {
+  // Falls back to defaults if attrs are missing
+  const attrs = editor.getAttributes("layoutColumn") || {};
+  return {
+    justifyContent: attrs.justifyContent ?? "flex-start",
+    alignItems: attrs.alignItems ?? "stretch",
+  };
+}
+
+function cycle<T extends string>(values: readonly T[], current: T) {
+  const i = values.indexOf(current);
+  return values[(i + 1 + values.length) % values.length];
+}
+
+function cycleJustify() {
+  if (!editor.isActive("layoutColumn")) return;
+  const { justifyContent } = getColumnAttrs();
+  const next = cycle(JUSTIFY_VALUES, justifyContent);
+  editor.chain().focus().setColumnJustify(next).run();
+}
+
+function cycleAlign() {
+  if (!editor.isActive("layoutColumn")) return;
+  const { alignItems } = getColumnAttrs();
+  const next = cycle(ALIGN_VALUES, alignItems);
+  editor.chain().focus().setColumnAlign(next).run();
+}
+
+// Optional: label helpers for the chip text/tooltip
+function labelForJustify(v: string) {
+  switch (v) {
+    case "flex-start":
+      return "Start";
+    case "center":
+      return "Center";
+    case "flex-end":
+      return "End";
+    case "space-between":
+      return "Space Between";
+    case "space-around":
+      return "Space Around";
+    case "space-evenly":
+      return "Space Evenly";
+    default:
+      return v;
+  }
+}
+function labelForAlign(v: string) {
+  switch (v) {
+    case "stretch":
+      return "Stretch";
+    case "flex-start":
+      return "Top";
+    case "center":
+      return "Middle";
+    case "flex-end":
+      return "Bottom";
+    case "baseline":
+      return "Baseline";
+    default:
+      return v;
+  }
+}
+
 watch(
   () => props.value,
   (value) => {
@@ -387,6 +479,27 @@ onBeforeUnmount(() => {
         @click="editor.chain().focus().toggleStrike().run()"
       >
         <icons.Strikethrough class="icon" />
+      </v-chip>
+      <v-chip
+        v-if="editor.isActive('layoutColumn')"
+        clickable
+        small
+        :outlined="true"
+        :v-tooltip="`${labelForJustify(editor.getAttributes('layoutColumn').justifyContent ?? 'flex-start')}`"
+        @click="cycleJustify"
+      >
+        <icons.AlignHorizontal class="icon" />
+      </v-chip>
+
+      <v-chip
+        v-if="editor.isActive('layoutColumn')"
+        clickable
+        small
+        :outlined="true"
+        :v-tooltip="`${labelForAlign(editor.getAttributes('layoutColumn').alignItems ?? 'stretch')}`"
+        @click="cycleAlign"
+      >
+        <icons.AlignVertical class="icon" />
       </v-chip>
     </bubble-menu>
 
@@ -1017,6 +1130,17 @@ onBeforeUnmount(() => {
         <icons.Image />
       </v-button>
 
+      <v-button
+        v-if="editorExtensions.includes('video')"
+        v-tooltip="'Video'"
+        small
+        icon
+        :disabled="props.disabled"
+        @click="videoOpen"
+      >
+        <icons.Video />
+      </v-button>
+
       <v-menu
         v-if="editorExtensions.includes('table')"
         show-arrow
@@ -1425,6 +1549,103 @@ onBeforeUnmount(() => {
         </v-button>
       </template>
     </v-drawer>
+
+    <v-drawer
+      v-model="videoDrawerOpen"
+      :title="'Add/Edit Video'"
+      icon="film"
+      @cancel="videoClose"
+    >
+      <div class="content">
+        <template v-if="videoSelection">
+          <video
+            class="video-preview"
+            :src="videoSelection.src || `/assets/${videoSelection.id}`"
+            :controls="!!videoSelection.controls"
+            :autoplay="!!videoSelection.autoplay"
+            :loop="!!videoSelection.loop"
+            :muted="!!videoSelection.muted"
+            playsinline
+          />
+
+          <div class="grid">
+            <div class="field">
+              <div class="type-label">Source URL</div>
+              <v-input v-model="videoSelection.src" :nullable="false" />
+            </div>
+
+            <div class="field switches">
+              <v-checkbox
+                v-model="videoSelection.controls"
+                :label="'Controls'"
+                density="compact"
+              />
+              <v-checkbox
+                v-model="videoSelection.autoplay"
+                :label="'Autoplay'"
+                density="compact"
+              />
+              <v-checkbox
+                v-model="videoSelection.loop"
+                :label="'Loop'"
+                density="compact"
+              />
+              <v-checkbox
+                v-model="videoSelection.muted"
+                :label="'Muted'"
+                density="compact"
+              />
+              <v-checkbox
+                v-model="videoSelection.captionsDefault"
+                :label="'Captions'"
+                density="compact"
+              />
+            </div>
+
+            <div class="field">
+              <div class="type-label">Captions (VTT)</div>
+              <template v-if="videoSelection?.captionsSrc">
+                <p>{{ videoSelection.captionsSrc }}</p>
+                <v-input v-model="videoSelection.captionsLabel" label="Label" />
+                <v-input
+                  v-model="videoSelection.captionsLang"
+                  label="Language Code"
+                />
+              </template>
+              <v-upload
+                v-else
+                :multiple="false"
+                from-library
+                from-url
+                accept=".vtt"
+                @input="captionsSelect"
+              />
+            </div>
+          </div>
+        </template>
+
+        <v-upload
+          v-else
+          :multiple="false"
+          from-library
+          from-url
+          accept="video/*"
+          @input="videoSelect"
+        />
+      </div>
+
+      <template #actions>
+        <v-button
+          v-tooltip.bottom="'Save Video'"
+          icon
+          rounded
+          :disabled="!videoSelection || !videoSelection.src"
+          @click="videoSave"
+        >
+          <v-icon name="check" />
+        </v-button>
+      </template>
+    </v-drawer>
   </div>
 </template>
 
@@ -1597,11 +1818,6 @@ onBeforeUnmount(() => {
     .details {
       margin: 0.5rem 0;
     }
-  }
-
-  .spacer {
-    display: block;
-    width: 100%;
   }
 
   [data-space-after="none"] {
@@ -1848,6 +2064,7 @@ onBeforeUnmount(() => {
       border-radius: 0.5rem;
       background-color: #fff;
       min-height: 40px;
+      display: flex;
     }
 
     table {
@@ -1921,6 +2138,13 @@ onBeforeUnmount(() => {
       &.ProseMirror-selectednode {
         outline: 2px solid var(--v-input-border-color-focus);
       }
+    }
+
+    video {
+      width: 100%;
+      max-height: 320px;
+      border-radius: 8px;
+      background: #000;
     }
   }
 }

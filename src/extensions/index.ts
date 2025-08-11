@@ -26,6 +26,7 @@ import bulletList from "./bullet-list";
 import orderedList from "./ordered-list";
 import layout from "./layout";
 import layoutColumn from "./layout-column";
+import video from "./video";
 
 type ExtensionGroup = "mark" | "node" | "editor";
 
@@ -82,6 +83,7 @@ export const extensionsMeta: ExtensionMeta[] = [
   details,
   detailsContent,
   detailsSummary,
+  video,
   // editor
   placeholder,
   focus,
